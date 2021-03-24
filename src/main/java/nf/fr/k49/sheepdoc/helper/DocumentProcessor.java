@@ -1,4 +1,4 @@
-package nf.fr.k49.sheepdoc;
+package nf.fr.k49.sheepdoc.helper;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,10 +37,7 @@ public class DocumentProcessor {
     }
 
     public void replaceKeys(final String inputFilePath, final String outputFilePath, Map<String,String> keyValues) throws FileNotFoundException, IOException {
-        try (XWPFDocument doc = new XWPFDocument(
-                Files.newInputStream(Paths.get(inputFilePath)))
-        ) {
-
+        try (XWPFDocument doc = new XWPFDocument(Files.newInputStream(Paths.get(inputFilePath)))) {
             List<XWPFParagraph> xwpfParagraphList = doc.getParagraphs();
             //Iterate over paragraph list and check for the replaceable text in each paragraph
             for (XWPFParagraph xwpfParagraph : xwpfParagraphList) {
@@ -49,14 +46,21 @@ public class DocumentProcessor {
                     //replacement and setting position
                     for (Map.Entry<String,String> entry : keyValues.entrySet()) {
                         docText = docText.replace("${"+entry.getKey()+"}", entry.getValue());
-                        System.out.println("=>"+docText.toString()+" "+entry.getKey()+"="+entry.getValue());
                     }
                     xwpfRun.setText(docText, 0);
                 }
             }
 
             // save the docs
-            try (FileOutputStream out = new FileOutputStream(outputFilePath)) {
+            String validOutputFilePath = outputFilePath;
+            final int lastDotPositionInInputPath = inputFilePath.lastIndexOf(".");
+            if (lastDotPositionInInputPath > -1 && lastDotPositionInInputPath < inputFilePath.length()-1) {
+                final String inputFileExtension = inputFilePath.substring(lastDotPositionInInputPath);
+                if (!validOutputFilePath.endsWith(inputFileExtension)) {
+                    validOutputFilePath += inputFileExtension;
+                }
+            }
+            try (FileOutputStream out = new FileOutputStream(validOutputFilePath)) {
                 doc.write(out);
             }
 

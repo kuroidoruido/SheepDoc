@@ -1,30 +1,24 @@
 package nf.fr.k49.sheepdoc;
 
+import com.alee.laf.WebLookAndFeel;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import nf.fr.k49.sheepdoc.state.State;
+import nf.fr.k49.sheepdoc.ui.MainWindow;
 
 public class App  {
-    public static void main( String[] args ) throws Exception {
+    public static void main( String[] args ) {
         System.out.println("Starting SheepDoc...");
-        
-        final ChooseTemplateDialog selectInputFileDialog = new ChooseTemplateDialog();
-        final String filePath = selectInputFileDialog.show();
-        System.out.println("Selected: "+filePath);
-
-        final DocumentProcessor docProcessor = new DocumentProcessor();
-        final List<String> extractedKeys = docProcessor.extractKeys(filePath);
-
-        final FillKeysWindow fillKeysWindow = new FillKeysWindow(extractedKeys);
-        fillKeysWindow.onGenerate(state -> {
-            final SaveDocumentDialog selectOutputFileDialog = new SaveDocumentDialog();
-            final String outputPath = selectOutputFileDialog.show();
+        final State state = new State();
+        SwingUtilities.invokeLater(() -> {
             try {
-                docProcessor.replaceKeys(filePath, outputPath, state);
-            } catch(Exception e) {
+                WebLookAndFeel.install();
+                final MainWindow mainWindow = new MainWindow(state);
+                mainWindow.setVisible(true);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            return null;
         });
-        fillKeysWindow.setVisible(true);
     }
 }
