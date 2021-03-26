@@ -6,13 +6,17 @@
   <groupId>nf.fr.k49.sheepdoc</groupId>
   <artifactId>sheepdoc</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>sheepdoc</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <sheepdoc.mainClass>nf.fr.k49.sheepdoc.App</sheepdoc.mainClass>
+    <maven.compiler.source>16</maven.compiler.source>
+    <maven.compiler.target>16</maven.compiler.target>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
   </properties>
 
   <dependencies>
@@ -46,9 +50,72 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
-          <mainClass>nf.fr.k49.sheepdoc.App</mainClass>
+          <mainClass>${sheepdoc.mainClass}</mainClass>
+          <arguments>
+            <argument>--add-opens java.base/java.util=ALL-UNNAMED</argument>
+            <argument>--add-opens java.base/java.text=ALL-UNNAMED</argument>
+            <argument>--add-opens java.base/java.lang.reflect=ALL-UNNAMED</argument>
+            <argument>--add-opens java.base/java.net=ALL-UNNAMED</argument>
+            <argument>--add-opens java.base/java.lang=ALL-UNNAMED</argument>
+            <argument>--add-opens java.base/jdk.internal.loader=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/javax.swing=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/javax.swing.text=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/java.awt.font=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/java.awt.geom=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/java.awt=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/java.beans=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/javax.swing.table=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/com.sun.awt=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/sun.awt=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/sun.swing=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/sun.font=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/javax.swing.plaf.basic=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/javax.swing.plaf.synth=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED</argument>
+            <argument>--add-opens java.desktop/com.apple.laf=ALL-UNNAMED</argument>
+          </arguments>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>single</goal>
+                </goals>
+                <configuration>
+                    <archive>
+                    <manifest>
+                        <mainClass>${sheepdoc.mainClass}</mainClass>
+                    </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <descriptors>
+                      <descriptor>src/main/assembly/src.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
     </plugins>
   </build>
 
