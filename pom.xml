@@ -71,6 +71,8 @@
               <goal>single</goal>
             </goals>
             <configuration>
+              <finalName>sheepdoc-jar-with-dependencies</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
               <archive>
                 <manifest>
                   <mainClass>${sheepdoc.mainClass}</mainClass>

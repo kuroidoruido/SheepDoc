@@ -1,0 +1,99 @@
+name: Build for Release
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  pkg-assembly: 'sheepdoc-jar-with-dependencies.jar'
+  pkg-mainclass: 'nf.fr.k49.sheepdoc.App'
+  pkg-name: 'SheepDoc'
+  pkg-version: '1.0.0'
+
+jobs:
+  fat:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 16
+      uses: actions/setup-java@v1
+      with:
+        java-version: 16
+    - name: Build fat jar
+      run: mvn package
+    - name: Upload fat jar
+      uses: actions/upload-artifact@v2
+      with:
+        name: jars
+        path: "target/${{ env.pkg-assembly }}"
+  # osx:
+  #   needs: fat
+  #   runs-on: [macos-latest]
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/setup-java@v1
+  #     with:
+  #       java-version: 16
+  #       java-package: jdk
+  #       architecture: x64
+  #   - name: Download fat jar
+  #     uses: actions/download-artifact@v2
+  #     with:
+  #       name: jars
+  #   - name: Package jar as dmg installer
+  #     run: "jpackage --input . --name ${{ env.pkg-name }} --main-jar ${{ env.pkg-assembly }} --main-class ${{ env.pkg-mainclass }} --verbose --type dmg"
+  #   - name: Upload dmg
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: dmgs
+  #       path: "${{ env.pkg-name }}-${{ env.pkg-version }}.dmg"
+  windows:
+    needs: fat
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 16
+        java-package: jdk
+        architecture: x64
+    - name: Download fat jar
+      uses: actions/download-artifact@v2
+      with:
+        name: jars
+    - name: Package jar as msi
+      run: "jpackage --input . --name ${{ env.pkg-name }} --main-jar ${{ env.pkg-assembly }} --main-class ${{ env.pkg-mainclass }} --verbose --type msi --win-dir-chooser"
+    - name: View artifacts
+      run: dir
+    - name: Rename msi
+      run: Rename-Item SheepDoc-*.msi "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: msis
+        path: "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
+  linux:
+    needs: fat
+    runs-on: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 16
+        java-package: jdk
+        architecture: x64
+    - name: Download fat jar
+      uses: actions/download-artifact@v2
+      with:
+        name: jars
+    - name: View artifacts
+      run: find ../..
+    - name: Package jar as debian package
+      run: "jpackage --input . --name ${{ env.pkg-name }} --main-jar ${{ env.pkg-assembly }} --main-class ${{ env.pkg-mainclass }} --verbose --type deb"
+    - name: Rename deb
+      run: mv sheepdoc*.deb "${{ env.pkg-name }}-${{ env.pkg-version }}.deb"
+    - name: Upload deb
+      uses: actions/upload-artifact@v2
+      with:
+        name : debs
+        path: "${{ env.pkg-name }}-${{ env.pkg-version }}.deb"
