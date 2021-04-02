@@ -3,16 +3,17 @@ package nf.fr.k49.sheepdoc.ui;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import com.alee.laf.label.WebLabel;
-import nf.fr.k49.sheepdoc.state.State;
 import nf.fr.k49.sheepdoc.helper.DocumentProcessor;
+import nf.fr.k49.sheepdoc.state.State;
 import nf.fr.k49.sheepdoc.ui.AbstractMainWindowView;
 
 public class MainWindow extends JFrame {
@@ -83,7 +84,7 @@ public class MainWindow extends JFrame {
             try {
                 this.docProcessor.replaceKeys(this.state.templatePath.get(), this.state.outputDocumentPath.get(), this.state.placeholderValues);
                 final JDialog dialog = new JDialog (this);
-                dialog.add(new WebLabel("Document saved!", WebLabel.CENTER));
+                dialog.add(new JLabel("Document saved!", SwingConstants.CENTER));
                 dialog.setSize(200,100);
                 dialog.setLocationRelativeTo(this);
                 dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

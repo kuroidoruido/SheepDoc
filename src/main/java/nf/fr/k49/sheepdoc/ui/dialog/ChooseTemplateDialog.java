@@ -1,8 +1,8 @@
 package nf.fr.k49.sheepdoc.ui.dialog;
 
 import java.io.File;
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.JFileChooser;
 
 public class ChooseTemplateDialog {
 

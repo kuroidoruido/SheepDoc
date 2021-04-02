@@ -1,6 +1,5 @@
 package nf.fr.k49.sheepdoc;
 
-import com.alee.laf.WebLookAndFeel;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -13,7 +12,6 @@ public class App  {
         final State state = new State();
         SwingUtilities.invokeLater(() -> {
             try {
-                WebLookAndFeel.install();
                 final MainWindow mainWindow = new MainWindow(state);
                 mainWindow.setVisible(true);
             } catch (Exception e) {
