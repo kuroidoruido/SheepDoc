@@ -10,7 +10,7 @@ A simple tool to fill docx templates.
 This sentence contains a ${placeholder}.
 ```
 
-A placeholder can contains only letters (upper or lower case), number, "_" and "-".
+A placeholder can contains only letters (upper or lower case), number, "_", "-" and space.
 
 - launch SheepDoc
 - it will ask you to select a template file

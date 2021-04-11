@@ -20,6 +20,8 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 public class DocumentProcessor {
 
+    private static Pattern KEY_PATTERN_EXTRACTOR = Pattern.compile("\\$\\{([a-zA-Z0-9 _-]+)\\}");
+
     public List<String> extractKeys(final String filePath) throws FileNotFoundException, IOException {
         final Set<String> keys = new HashSet<>();
 
@@ -27,8 +29,7 @@ public class DocumentProcessor {
         final XWPFWordExtractor we = new XWPFWordExtractor(docx);
         final String docText = we.getText();
         
-        final Pattern pattern = Pattern.compile("\\$\\{([a-zA-Z0-9_-]+)\\}");
-        final Matcher matcher = pattern.matcher(docText);
+        final Matcher matcher = KEY_PATTERN_EXTRACTOR.matcher(docText);
         while (matcher.find()) {
             keys.add(matcher.group(1));
         }
@@ -39,15 +40,17 @@ public class DocumentProcessor {
     public void replaceKeys(final String inputFilePath, final String outputFilePath, Map<String,String> keyValues) throws FileNotFoundException, IOException {
         try (XWPFDocument doc = new XWPFDocument(Files.newInputStream(Paths.get(inputFilePath)))) {
             List<XWPFParagraph> xwpfParagraphList = doc.getParagraphs();
-            //Iterate over paragraph list and check for the replaceable text in each paragraph
+            // Iterate over paragraph list and check for the replaceable text in each paragraph
             for (XWPFParagraph xwpfParagraph : xwpfParagraphList) {
                 for (XWPFRun xwpfRun : xwpfParagraph.getRuns()) {
                     String docText = xwpfRun.getText(0);
-                    //replacement and setting position
-                    for (Map.Entry<String,String> entry : keyValues.entrySet()) {
-                        docText = docText.replace("${"+entry.getKey()+"}", entry.getValue());
+                    if (docText != null) {
+                        // replacement and setting position
+                        for (Map.Entry<String,String> entry : keyValues.entrySet()) {
+                            docText = docText.replace("${"+entry.getKey()+"}", entry.getValue());
+                        }
+                        xwpfRun.setText(docText, 0);
                     }
-                    xwpfRun.setText(docText, 0);
                 }
             }
 
